@@ -2,7 +2,7 @@ import { BadRequestException, ConflictException, Injectable, NotFoundException }
 import { DBService } from './db.service';
 import { Statement, SqliteError } from 'better-sqlite3';
 import { Coctail, CoctailContent } from './db_types';
-import { CreateCoctailDTO, EditCoctailDTO, InitialCoctailContentDTO } from './coctails.dto';
+import { CreateCoctailDTO, EditCoctailDTO, EditCoctailIngredientDTO, InitialCoctailContentDTO } from './coctails.dto';
 
 @Injectable()
 export class CoctailsService {
@@ -12,8 +12,10 @@ export class CoctailsService {
   private readonly createStatement: Statement;
   private readonly deleteStatement: Statement;
   private readonly getIngredientsStatement: Statement;
+  private readonly getIngredientStatement: Statement;
   private readonly setIngredientStatement: Statement;
   private readonly clearIngredientsStatement: Statement;
+  private readonly removeIngredientStatement: Statement;
   private static readonly updateableFields: Record<string, string> = {
   // "API name": "DB name"
     "name": "name",
@@ -28,8 +30,10 @@ export class CoctailsService {
     this.createStatement = dbService.db.prepare('INSERT INTO coctails (name, category, instructions) VALUES (@name, @category, @instructions) RETURNING *;')
     this.deleteStatement = dbService.db.prepare('DELETE FROM coctails WHERE id = ?;');
     this.getIngredientsStatement = dbService.db.prepare('SELECT ingredient_id, amount FROM coctail_contents WHERE coctail_id = ?;');
-    this.setIngredientStatement = dbService.db.prepare('INSERT OR REPLACE INTO coctail_contents (coctail_id, ingredient_id, amount) VALUES (@coctail_id, @ingredient_id, @amount);');
+    this.getIngredientStatement = dbService.db.prepare('SELECT ingredient_id, amount FROM coctail_contents WHERE coctail_id = ? AND ingredient_id = ?;');
+    this.setIngredientStatement = dbService.db.prepare('INSERT OR REPLACE INTO coctail_contents (coctail_id, ingredient_id, amount) VALUES (@coctail_id, @ingredient_id, @amount) RETURNING ingredient_id, amount;');
     this.clearIngredientsStatement = dbService.db.prepare('DELETE FROM coctail_contents WHERE coctail_id = ?;');
+    this.removeIngredientStatement = dbService.db.prepare('DELETE FROM coctail_contents WHERE coctail_id = ? AND ingredient_id = ?;');
   }
 
   exists(id: number): boolean {
@@ -46,6 +50,22 @@ export class CoctailsService {
 
   getIngredients(id: number): CoctailContent[] {
     return this.getIngredientsStatement.all(id) as CoctailContent[];
+  }
+
+  getIngredient(coctail_id: number, ingredient_id: number): CoctailContent | undefined {
+    return this.getIngredientStatement.get(coctail_id, ingredient_id) as CoctailContent | undefined;
+  }
+
+  setIngredient(coctail_id: number, ingredient_id: number, obj: EditCoctailIngredientDTO): CoctailContent {
+    return this.setIngredientStatement.get({
+      coctail_id: coctail_id,
+      ingredient_id: ingredient_id,
+      ...obj,
+    }) as CoctailContent;
+  }
+
+  removeIngredient(coctail_id: number, ingredient_id: number) {
+    this.removeIngredientStatement.run(coctail_id, ingredient_id)
   }
 
   private batchSetIngredients(id: number, ingredients: InitialCoctailContentDTO[]) {
