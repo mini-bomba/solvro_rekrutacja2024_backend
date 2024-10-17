@@ -1,11 +1,12 @@
 import { Body, ConflictException, Controller, Delete, Get, HttpCode, NotFoundException, Param, Patch, Post } from '@nestjs/common';
 import { CategoryDTO, CreateCategoryDTO } from './categories.dto';
-import { ApiConflictResponse, ApiNoContentResponse, ApiNotFoundResponse, ApiOperation } from '@nestjs/swagger';
+import { ApiConflictResponse, ApiNoContentResponse, ApiNotFoundResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CategoriesService } from './categories.service';
 import { SqliteError } from 'better-sqlite3';
 import { DeleteObjectParams, GetObjectParams, UpdateObjectParams } from './common.dto';
 
 @Controller('categories')
+@ApiTags("categories")
 export class CategoriesController {
   constructor(private readonly service: CategoriesService) {}
 

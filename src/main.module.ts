@@ -10,9 +10,9 @@ import { CategoriesController } from './categories.controller';
 @Module({
   imports: [],
   controllers: [
-    CoctailsController,
-    IngredientsController,
     CategoriesController,
+    IngredientsController,
+    CoctailsController,
   ],
   providers: [
     DBService,

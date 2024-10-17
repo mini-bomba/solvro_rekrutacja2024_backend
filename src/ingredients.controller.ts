@@ -1,11 +1,12 @@
 import { BadRequestException, Body, ConflictException, Controller, Delete, Get, HttpCode, NotFoundException, Param, Patch, Post } from '@nestjs/common';
 import { IngredientDTO, CreateIngredientDTO, EditIngredientDTO } from './ingredients.dto';
-import { ApiBadRequestResponse, ApiConflictResponse, ApiNoContentResponse, ApiNotFoundResponse, ApiOperation } from '@nestjs/swagger';
+import { ApiBadRequestResponse, ApiConflictResponse, ApiNoContentResponse, ApiNotFoundResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { IngredientsService } from './ingredients.service';
 import { SqliteError } from 'better-sqlite3';
 import { DeleteObjectParams, GetObjectParams, UpdateObjectParams } from './common.dto';
 
 @Controller('ingredients')
+@ApiTags("ingredients")
 export class IngredientsController {
   constructor(private readonly service: IngredientsService) {}
 

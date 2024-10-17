@@ -1,11 +1,12 @@
 import { Body, Controller, Delete, Get, HttpCode, NotFoundException, Param, Patch, Post } from '@nestjs/common';
 import { CoctailsService } from './coctails.service';
 import { CoctailDTO, CreateCoctailDTO, EditCoctailDTO } from './coctails.dto';
-import { ApiBadRequestResponse, ApiConflictResponse, ApiNoContentResponse, ApiNotFoundResponse, ApiOperation } from '@nestjs/swagger';
+import { ApiBadRequestResponse, ApiConflictResponse, ApiNoContentResponse, ApiNotFoundResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { DeleteObjectParams, GetObjectParams, UpdateObjectParams } from './common.dto';
 import { Coctail } from './db_types';
 
 @Controller('coctails')
+@ApiTags("coctails")
 export class CoctailsController {
   constructor(private readonly service: CoctailsService) {}
 
