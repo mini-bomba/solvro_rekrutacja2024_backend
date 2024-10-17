@@ -5,7 +5,13 @@ import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(MainModule);
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(new ValidationPipe({
+    transform: true,
+    forbidUnknownValues: true,
+    whitelist: true,
+    forbidNonWhitelisted: true,
+    skipMissingProperties: true,
+  }));
 
   const config = new DocumentBuilder()
     .setTitle('Coctails API')

@@ -3,6 +3,7 @@ import { DBService } from './db.service';
 import { Statement } from 'better-sqlite3';
 import { Category } from './db_types';
 import { CreateCategoryDTO } from './categories.dto';
+import { instanceToPlain } from 'class-transformer';
 
 @Injectable()
 export class CategoriesService {
@@ -36,7 +37,7 @@ export class CategoriesService {
 
   // returns the new entry
   create(obj: CreateCategoryDTO): Category {
-    return this.createStatement.get(obj) as Category;
+    return this.createStatement.get(instanceToPlain(obj)) as Category;
   }
 
   // returns true if entry was deleted, false if there was nothing to delete
@@ -46,6 +47,6 @@ export class CategoriesService {
 
   // returns the edited category if entry was updated, undefined/null if there was nothing to update
   update(id: number, edits: CreateCategoryDTO): Category | undefined {
-    return this.updateStatement.get(id, edits) as Category | undefined;
+    return this.updateStatement.get(id, instanceToPlain(edits)) as Category | undefined;
   }
 }

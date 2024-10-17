@@ -1,12 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumberString } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsInt } from 'class-validator';
 
 export class GetObjectParams {
   @ApiProperty({
     required: true,
     description: 'ID of the object to be retrieved',
   })
-  @IsNumberString()
+  @IsInt()
+  @Type(() => Number)
   id: number;
 }
 
@@ -15,7 +17,8 @@ export class DeleteObjectParams {
     required: true,
     description: 'ID of the object to be deleted',
   })
-  @IsNumberString()
+  @IsInt()
+  @Type(() => Number)
   id: number;
 }
 
@@ -24,6 +27,7 @@ export class UpdateObjectParams {
     required: true,
     description: 'ID of the object to be edited',
   })
-  @IsNumberString()
+  @IsInt()
+  @Type(() => Number)
   id: number;
 }
