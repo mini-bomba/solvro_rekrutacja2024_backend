@@ -27,7 +27,7 @@ describe('IngredientsController', () => {
 
   describe(".getAll()", () => {
     it("should return all defined ingredients", () => {
-      expect(controller.getAll()).toIncludeSameMembers([
+      expect(controller.getAll({})).toIncludeSameMembers([
         {
           id: 1,
           name: 'test ingredient 1',
@@ -42,8 +42,94 @@ describe('IngredientsController', () => {
           contains_alcohol: true,
           photo_url: 'https://minibomba.pro/icons/mini_bomba.png',
         },
+        {
+          id: 3,
+          name: 'another one',
+          description: 'no alcohol, pikczer',
+          contains_alcohol: false,
+          photo_url: 'pikczer url here or smth idk',
+        },
+        {
+          id: 4,
+          name: 'one more',
+          description: 'alcohol, no photo',
+          contains_alcohol: true,
+          photo_url: null,
+        },
       ]);
     });
+
+    it("should filter by alcohol", () => {
+      expect(controller.getAll({ contains_alcohol: true })).toIncludeSameMembers([
+        {
+          id: 2,
+          name: 'a second ingredient',
+          description: 'this one has alcohol',
+          contains_alcohol: true,
+          photo_url: 'https://minibomba.pro/icons/mini_bomba.png',
+        },
+        {
+          id: 4,
+          name: 'one more',
+          description: 'alcohol, no photo',
+          contains_alcohol: true,
+          photo_url: null,
+        },
+      ]);
+
+      expect(controller.getAll({ contains_alcohol: false })).toIncludeSameMembers([
+        {
+          id: 1,
+          name: 'test ingredient 1',
+          description: 'description!!!!',
+          contains_alcohol: false,
+          photo_url: null,
+        },
+        {
+          id: 3,
+          name: 'another one',
+          description: 'no alcohol, pikczer',
+          contains_alcohol: false,
+          photo_url: 'pikczer url here or smth idk',
+        },
+      ]);
+    })
+
+    it("should filter by photo", () => {
+      expect(controller.getAll({ has_photo: true })).toIncludeSameMembers([
+        {
+          id: 2,
+          name: 'a second ingredient',
+          description: 'this one has alcohol',
+          contains_alcohol: true,
+          photo_url: 'https://minibomba.pro/icons/mini_bomba.png',
+        },
+        {
+          id: 3,
+          name: 'another one',
+          description: 'no alcohol, pikczer',
+          contains_alcohol: false,
+          photo_url: 'pikczer url here or smth idk',
+        },
+      ]);
+
+      expect(controller.getAll({ has_photo: false })).toIncludeSameMembers([
+        {
+          id: 1,
+          name: 'test ingredient 1',
+          description: 'description!!!!',
+          contains_alcohol: false,
+          photo_url: null,
+        },
+        {
+          id: 4,
+          name: 'one more',
+          description: 'alcohol, no photo',
+          contains_alcohol: true,
+          photo_url: null,
+        },
+      ]);
+    })
   });
 
   describe(".get()", () => {
@@ -66,7 +152,7 @@ describe('IngredientsController', () => {
     });
 
     it("should throw NotFoundException if ingredient doesn't exist", () => {
-      expect(() => controller.get({ id: 3 })).toThrow(NotFoundException);
+      expect(() => controller.get({ id: 2137 })).toThrow(NotFoundException);
     });
   });
 
@@ -159,7 +245,7 @@ describe('IngredientsController', () => {
     });
 
     it("should throw NotFoundException if ingredient doesn't exist", () => {
-      expect(() => controller.delete({ id: 3 })).toThrow(NotFoundException);
+      expect(() => controller.delete({ id: 2137 })).toThrow(NotFoundException);
     });
     it("should throw ConflictException if ingredient is in use", () => {
       expect(() => controller.delete({ id: 2 })).toThrow(ConflictException);
@@ -263,7 +349,7 @@ describe('IngredientsController', () => {
     });
 
     it("should throw NotFoundException if ingredient doesn't exist", () => {
-      expect(() => controller.update({ id: 3 }, { name: 'a' })).toThrow(NotFoundException);
+      expect(() => controller.update({ id: 2137 }, { name: 'a' })).toThrow(NotFoundException);
     });
     it("should throw BadRequestException when trying to set required properties to null", () => {
       const expected = {

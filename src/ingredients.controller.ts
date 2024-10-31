@@ -1,5 +1,5 @@
-import { BadRequestException, Body, ConflictException, Controller, Delete, Get, HttpCode, NotFoundException, Param, Patch, Post } from '@nestjs/common';
-import { IngredientDTO, CreateIngredientDTO, EditIngredientDTO } from './ingredients.dto';
+import { BadRequestException, Body, ConflictException, Controller, Delete, Get, HttpCode, NotFoundException, Param, Patch, Post, Query } from '@nestjs/common';
+import { IngredientDTO, CreateIngredientDTO, EditIngredientDTO, FilterIngredientsParams } from './ingredients.dto';
 import { ApiBadRequestResponse, ApiConflictResponse, ApiNoContentResponse, ApiNotFoundResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { IngredientsService } from './ingredients.service';
 import { SqliteError } from 'better-sqlite3';
@@ -12,8 +12,8 @@ export class IngredientsController {
 
   @Get()
   @ApiOperation({ summary: 'Get all defined ingredients' })
-  getAll(): IngredientDTO[] {
-    return this.service.getAll() as IngredientDTO[];
+  getAll(@Query() params: FilterIngredientsParams): IngredientDTO[] {
+    return this.service.getAll(params) as IngredientDTO[];
   }
 
   @Get(':id')

@@ -1,4 +1,7 @@
+import { ApiProperty } from "@nestjs/swagger";
+import { Transform, Type } from "class-transformer";
 import { IsBoolean, IsDefined, IsOptional, IsString, Length } from "class-validator";
+import { boolean_transform } from "./utils";
 
 export class IngredientDTO {
   id: number;
@@ -40,4 +43,24 @@ export class EditIngredientDTO {
 
   @IsString()
   photo_url?: string | null;
+}
+
+export class FilterIngredientsParams {
+  @ApiProperty({
+    required: false,
+    description: 'Return only alcoholic or non-alcoholic ingredients. Omit to return both.',
+  })
+  @IsOptional()
+  @IsBoolean()
+  @Transform(boolean_transform)
+  contains_alcohol?: boolean;
+
+  @ApiProperty({
+    required: false,
+    description: 'Return only ingredients with photos or without photos. Omit to return both.',
+  })
+  @IsOptional()
+  @IsBoolean()
+  @Transform(boolean_transform)
+  has_photo?: boolean;
 }

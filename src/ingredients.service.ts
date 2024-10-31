@@ -1,8 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { DBService } from './db.service';
 import { Database, Statement } from 'better-sqlite3';
 import { Ingredient } from './db_types';
-import { CreateIngredientDTO, EditIngredientDTO } from './ingredients.dto';
+import { CreateIngredientDTO, EditIngredientDTO, FilterIngredientsParams } from './ingredients.dto';
 
 @Injectable()
 export class IngredientsService {
@@ -42,8 +42,28 @@ export class IngredientsService {
     return this.transformDBObject(this.getOneStatement.get(id));
   }
 
-  getAll(): Ingredient[] {
-    return this.getAllStatement.all().map(this.transformDBObject.bind(this));
+  getAll(params: FilterIngredientsParams): Ingredient[] {
+    let statement: Statement;
+    if (Object.keys(params).length === 0) {
+      statement = this.getAllStatement;
+    } else {
+      const where_clauses = []
+
+      if (params.contains_alcohol != null) {
+        where_clauses.push(`contains_alcohol = ${params.contains_alcohol ? 'TRUE' : 'FALSE'}`);
+      }
+      if (params.has_photo != null) {
+        where_clauses.push(`photo_url IS${params.has_photo ? ' NOT' : ''} NULL`);
+      }
+
+      const where_clauses_string = where_clauses.length == 0 ? '' : ` WHERE ${where_clauses.join(' AND ')}`;
+      const query = `SELECT * FROM ingredients${where_clauses_string};`
+      new Logger(IngredientsService.name).log(query);
+      new Logger(IngredientsService.name).log(JSON.stringify(params));
+      statement = this.db.prepare(query);
+    }
+
+    return statement.all().map(this.transformDBObject.bind(this));
   }
 
   // returns the new entry
