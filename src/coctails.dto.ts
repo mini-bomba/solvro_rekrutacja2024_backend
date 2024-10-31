@@ -1,6 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { Type } from "class-transformer";
-import { IsArray, IsDefined, IsInt, IsNumber, IsOptional, IsPositive, IsString, Length, Min, ValidateNested } from "class-validator";
+import { Transform, Type } from "class-transformer";
+import { IsArray, IsBoolean, IsDefined, IsInt, IsNumber, IsOptional, IsPositive, IsString, Length, Min, ValidateNested } from "class-validator";
+import { boolean_transform } from "./utils";
 
 export class CoctailDTO {
   id: number;
@@ -122,4 +123,33 @@ export class DeleteCoctailIngredientParams {
   @IsInt()
   @Type(() => Number)
   ingredient_id: number;
+}
+
+export class FilterCoctailsParams {
+  @ApiProperty({
+    required: false,
+    description: 'Return only alcoholic or non-alcoholic coctails. Omit to return both.',
+  })
+  @IsOptional()
+  @IsBoolean()
+  @Transform(boolean_transform)
+  contains_alcohol?: boolean;
+
+  @ApiProperty({
+    required: false,
+    description: 'Return only coctails from this category. Omit to return all.',
+  })
+  @IsOptional()
+  @IsInt()
+  @Type(() => Number)
+  category_id?: number;
+
+  @ApiProperty({
+    required: false,
+    description: 'Return only coctails that contain this ingredient. Omit to return all.',
+  })
+  @IsOptional()
+  @IsInt()
+  @Type(() => Number)
+  ingredient_id?: number;
 }

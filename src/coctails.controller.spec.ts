@@ -29,7 +29,7 @@ describe('CoctailsController', () => {
 
   describe(".getAll()", () => {
     it("should return all defined coctails", () => {
-      expect(controller.getAll()).toIncludeSameMembers([
+      expect(controller.getAll({})).toIncludeSameMembers([
         {
           id: 1,
           name: 'test coctail 1',
@@ -49,9 +49,118 @@ describe('CoctailsController', () => {
           instructions: 'just add a bit of testing',
           ingredients: expect.toIncludeSameMembers([
           ])
-        }
+        },
+        {
+          id: 3,
+          name: 'a non-alcoholic coctail',
+          category_id: 3,
+          instructions: 'pour some water into a glass, serve',
+          ingredients: expect.toIncludeSameMembers([
+            {
+              id: 3,
+              amount: 13.37,
+            }
+          ])
+        },
       ])
     });
+
+    it("should filter by alcohol content", () => {
+      expect(controller.getAll({contains_alcohol: true})).toIncludeSameMembers([
+        {
+          id: 1,
+          name: 'test coctail 1',
+          category_id: 2,
+          instructions: 'test, test, and test',
+          ingredients: expect.toIncludeSameMembers([
+            {
+              id: 2,
+              amount: 3,
+            },
+          ])
+        },
+      ]);
+      
+      expect(controller.getAll({contains_alcohol: false})).toIncludeSameMembers([
+        {
+          id: 2,
+          name: 'test coctail 2',
+          category_id: 2,
+          instructions: 'just add a bit of testing',
+          ingredients: expect.toIncludeSameMembers([
+          ])
+        },
+        {
+          id: 3,
+          name: 'a non-alcoholic coctail',
+          category_id: 3,
+          instructions: 'pour some water into a glass, serve',
+          ingredients: expect.toIncludeSameMembers([
+            {
+              id: 3,
+              amount: 13.37,
+            }
+          ])
+        },
+      ])
+    })
+
+    it("should filter by category", () => {
+      expect(controller.getAll({category_id: 2})).toIncludeSameMembers([
+        {
+          id: 1,
+          name: 'test coctail 1',
+          category_id: 2,
+          instructions: 'test, test, and test',
+          ingredients: expect.toIncludeSameMembers([
+            {
+              id: 2,
+              amount: 3,
+            },
+          ])
+        },
+        {
+          id: 2,
+          name: 'test coctail 2',
+          category_id: 2,
+          instructions: 'just add a bit of testing',
+          ingredients: expect.toIncludeSameMembers([
+          ])
+        },
+      ]);
+      
+      expect(controller.getAll({category_id: 3})).toIncludeSameMembers([
+        {
+          id: 3,
+          name: 'a non-alcoholic coctail',
+          category_id: 3,
+          instructions: 'pour some water into a glass, serve',
+          ingredients: expect.toIncludeSameMembers([
+            {
+              id: 3,
+              amount: 13.37,
+            }
+          ])
+        },
+      ])
+    })
+
+    it("should filter by ingredient", () => {
+      expect(controller.getAll({ingredient_id: 3})).toIncludeSameMembers([
+        {
+          id: 3,
+          name: 'a non-alcoholic coctail',
+          category_id: 3,
+          instructions: 'pour some water into a glass, serve',
+          ingredients: expect.toIncludeSameMembers([
+            {
+              id: 3,
+              amount: 13.37,
+            }
+          ])
+        },
+      ])
+    })
   });
 
   describe(".get()", () => {
@@ -70,7 +179,7 @@ describe('CoctailsController', () => {
       });
     });
     it("should throw NotFoundException if coctail doesn't exist", () => {
-      expect(() => controller.get({id: 3})).toThrow(NotFoundException);
+      expect(() => controller.get({id: 2137})).toThrow(NotFoundException);
     });
   });
 
@@ -216,7 +325,7 @@ describe('CoctailsController', () => {
     });
 
     it("should throw NotFoundException if coctail doesn't exist", () => {
-      expect(() => controller.delete({ id: 3 })).toThrow(NotFoundException);
+      expect(() => controller.delete({ id: 2137 })).toThrow(NotFoundException);
     });
   });
 
@@ -431,7 +540,7 @@ describe('CoctailsController', () => {
     ];
 
     it("should throw NotFoundException if coctail doesn't exist", () => {
-      expect(() => controller.update({id: 3}, {name: "test!"})).toThrow(NotFoundException);
+      expect(() => controller.update({id: 2137}, {name: "test!"})).toThrow(NotFoundException);
     });
     it("should throw BadRequestException when trying to set properties to null", () => {
       
@@ -499,7 +608,7 @@ describe('CoctailsController', () => {
       expect(controller.getIngredients({id: 2})).toIncludeSameMembers([]);
     });
     it("should throw NotFoundException if coctail doesn't exist", () => {
-      expect(() => controller.getIngredients({id: 3})).toThrow(NotFoundException);
+      expect(() => controller.getIngredients({id: 2137})).toThrow(NotFoundException);
     });
   });
 

@@ -1,6 +1,6 @@
-import { BadRequestException, Body, Controller, Delete, Get, HttpCode, NotFoundException, Param, Patch, Post } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, HttpCode, NotFoundException, Param, Patch, Post, Query } from '@nestjs/common';
 import { CoctailsService } from './coctails.service';
-import { CoctailContentDTO, CoctailDTO, CreateCoctailDTO, DeleteCoctailIngredientParams, EditCoctailDTO, EditCoctailIngredientDTO, EditCoctailIngredientParams, GetCoctailIngredientParams } from './coctails.dto';
+import { CoctailContentDTO, CoctailDTO, CreateCoctailDTO, DeleteCoctailIngredientParams, EditCoctailDTO, EditCoctailIngredientDTO, EditCoctailIngredientParams, FilterCoctailsParams, GetCoctailIngredientParams } from './coctails.dto';
 import { ApiBadRequestResponse, ApiConflictResponse, ApiNoContentResponse, ApiNotFoundResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { DeleteObjectParams, GetObjectParams, UpdateObjectParams } from './common.dto';
 import { Coctail, CoctailContent } from './db_types';
@@ -32,8 +32,8 @@ export class CoctailsController {
 
   @Get()
   @ApiOperation({ summary: 'Get all defined coctails' })
-  getAll(): CoctailDTO[] {
-    return this.service.getAll().map(this.addIngredientInfo.bind(this));
+  getAll(@Query() params: FilterCoctailsParams): CoctailDTO[] {
+    return this.service.getAll(params).map(this.addIngredientInfo.bind(this));
   }
 
   @Get(':id')

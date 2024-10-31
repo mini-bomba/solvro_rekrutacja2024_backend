@@ -1,8 +1,9 @@
-import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { DBService } from './db.service';
 import { Statement, SqliteError } from 'better-sqlite3';
 import { Coctail, CoctailContent } from './db_types';
-import { CreateCoctailDTO, EditCoctailDTO, EditCoctailIngredientDTO, InitialCoctailContentDTO } from './coctails.dto';
+import { CreateCoctailDTO, EditCoctailDTO, EditCoctailIngredientDTO, FilterCoctailsParams, InitialCoctailContentDTO } from './coctails.dto';
+import { instanceToPlain } from 'class-transformer';
 
 @Injectable()
 export class CoctailsService {
@@ -44,8 +45,56 @@ export class CoctailsService {
     return this.getOneStatement.get(id) as Coctail | undefined;
   }
 
-  getAll(): Coctail[] {
-    return this.getAllStatement.all() as Coctail[];
+  getAll(params: FilterCoctailsParams): Coctail[] {
+    let statement: Statement;
+    if (Object.keys(params).length === 0) {
+      statement = this.getAllStatement;
+    } else {
+      let query: string;
+      const where_clauses = [];
+      const having_clauses = [];
+      if (params.category_id != null) {
+        where_clauses.push("coctails.category = @category_id");
+      }
+      if (params.ingredient_id != null) {
+        having_clauses.push("SUM(CASE WHEN coctail_contents.ingredient_id = @ingredient_id THEN 1 ELSE 0 END) > 0");
+      }
+      if (params.contains_alcohol != null) {
+        having_clauses.push(`SUM(CASE WHEN ingredients.contains_alcohol = TRUE THEN 1 ELSE 0 END) ${params.contains_alcohol ? '>' : '='} 0`);
+      }
+
+      if (having_clauses.length === 0) {
+        if (where_clauses.length === 0) {
+          query = "SELECT * FROM coctails;";
+        } else {
+          query = `SELECT * FROM coctails WHERE ${where_clauses.join(" AND ")};`;
+        }
+      } else {
+        if (where_clauses.length === 0) {
+          query = `
+            SELECT coctails.* 
+            FROM coctails 
+            LEFT JOIN coctail_contents ON coctails.id = coctail_contents.coctail_id
+            LEFT JOIN ingredients ON ingredients.id = coctail_contents.ingredient_id
+            GROUP BY coctails.id
+            HAVING ${having_clauses.join(" AND ")};
+          `
+        } else {
+          query = `
+            SELECT coctails.* 
+            FROM coctails 
+            LEFT JOIN coctail_contents ON coctails.id = coctail_contents.coctail_id
+            LEFT JOIN ingredients ON ingredients.id = coctail_contents.ingredient_id
+            WHERE ${where_clauses.join(" AND ")}
+            GROUP BY coctails.id
+            HAVING ${having_clauses.join(" AND ")};
+          `
+        }
+      }
+      new Logger(CoctailsService.name).log(query);
+      statement = this.dbService.db.prepare(query);
+    }
+    return statement.all(instanceToPlain(params)) as Coctail[];
   }
 
   getIngredients(id: number): CoctailContent[] {

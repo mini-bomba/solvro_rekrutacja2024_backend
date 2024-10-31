@@ -1,5 +1,5 @@
 INSERT INTO categories (id, name) 
-VALUES (1, 'test category 1'), (2, 'another test category');
+VALUES (1, 'test category 1'), (2, 'another test category'), (3, 'another category named with zero creativity whatsoever');
 
 INSERT INTO ingredients (id, name, description, contains_alcohol, photo_url)
 VALUES (1, 'test ingredient 1', 'description!!!!', FALSE, NULL),
@@ -9,8 +9,9 @@ VALUES (1, 'test ingredient 1', 'description!!!!', FALSE, NULL),
 
 INSERT INTO coctails (id, name, category, instructions)
 VALUES (1, 'test coctail 1', 2, 'test, test, and test'),
-       (2, 'test coctail 2', 2, 'just add a bit of testing');
+       (2, 'test coctail 2', 2, 'just add a bit of testing'),
+       (3, 'a non-alcoholic coctail', 3, 'pour some water into a glass, serve');
 
 INSERT INTO coctail_contents (coctail_id, ingredient_id, amount)
-VALUES (1, 2, 3);
+VALUES (1, 2, 3), (3, 3, 13.37);
 

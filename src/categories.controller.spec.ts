@@ -35,6 +35,10 @@ describe('CategoriesController', () => {
           id: 2,
           name: 'another test category',
         },
+        {
+          id: 3,
+          name: 'another category named with zero creativity whatsoever',
+        },
       ]);
     });
   });
@@ -53,7 +57,7 @@ describe('CategoriesController', () => {
     });
 
     it("should throw NotFoundException if category doesn't exist", () => {
-      expect(() => controller.get({ id: 3 })).toThrow(NotFoundException);
+      expect(() => controller.get({ id: 2137 })).toThrow(NotFoundException);
     });
   });
 
@@ -85,7 +89,7 @@ describe('CategoriesController', () => {
     });
 
     it("should throw NotFoundException if category doesn't exist", () => {
-      expect(() => controller.delete({ id: 3 })).toThrow(NotFoundException);
+      expect(() => controller.delete({ id: 2137 })).toThrow(NotFoundException);
     });
 
     it("should throw ConflictException if category is in use", () => {
@@ -106,7 +110,7 @@ describe('CategoriesController', () => {
     });
 
     it("should throw NotFoundException if category doesn't exist", () => {
-      expect(() => controller.update({ id: 3 }, { name: "this should fail anyway" })).toThrow(NotFoundException);
+      expect(() => controller.update({ id: 2137 }, { name: "this should fail anyway" })).toThrow(NotFoundException);
     });
 
     it("should throw ConflictException if the category exists, but the new name is not unique", () => {
