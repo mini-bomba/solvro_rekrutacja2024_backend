@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, NotFoundException, Param, Patch, Post } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, HttpCode, NotFoundException, Param, Patch, Post } from '@nestjs/common';
 import { CoctailsService } from './coctails.service';
 import { CoctailContentDTO, CoctailDTO, CreateCoctailDTO, DeleteCoctailIngredientParams, EditCoctailDTO, EditCoctailIngredientDTO, EditCoctailIngredientParams, GetCoctailIngredientParams } from './coctails.dto';
 import { ApiBadRequestResponse, ApiConflictResponse, ApiNoContentResponse, ApiNotFoundResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -110,6 +110,7 @@ export class CoctailsController {
   })
   @ApiNotFoundResponse({ description: 'Requested coctail or ingredient does not exist' })
   setIngredient(@Param() params: EditCoctailIngredientParams, @Body() body: EditCoctailIngredientDTO): CoctailContentDTO {
+    if (body.amount < 0) throw new BadRequestException("Amount cannot be negative");
     if (!this.service.exists(params.coctail_id)) {
       throw new NotFoundException(`Coctail with ID ${params.coctail_id} does not exist`);
     }

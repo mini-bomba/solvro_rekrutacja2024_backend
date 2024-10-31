@@ -6,7 +6,8 @@ VALUES (1, 'test ingredient 1', 'description!!!!', FALSE, NULL),
 (2, 'a second ingredient', 'this one has alcohol', TRUE, 'https://minibomba.pro/icons/mini_bomba.png');
 
 INSERT INTO coctails (id, name, category, instructions)
-VALUES (1, 'test coctail 1', 2, 'test, test, and test');
+VALUES (1, 'test coctail 1', 2, 'test, test, and test'),
+       (2, 'test coctail 2', 2, 'just add a bit of testing');
 
 INSERT INTO coctail_contents (coctail_id, ingredient_id, amount)
 VALUES (1, 2, 3);
